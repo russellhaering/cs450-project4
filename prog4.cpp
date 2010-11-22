@@ -114,6 +114,7 @@ const unsigned WIN_HEIGHT = 500;
 int main_window;
 int objSelected = -1;
 
+const float light0_pos[] = {0.f, 3.f, 2.f, 1.f};
 Material lightCoeffs;
 Material objectMat;
 
@@ -167,7 +168,7 @@ int xMouse, yMouse;
 
 GLUI *glui;
 GLUI_EditText *objFileNameTextField;
-const string path = string("OBJ Files/");
+const string path = string("data/objects/");
 const string ext = string(".obj");
 
 /************************************************************************/
@@ -252,7 +253,7 @@ int loadObj(const char *fileName, Object &obj)
 		{
 			if (buffer[1] == 'n')
 			{
-				sscanf (	buffer.data() + 2*sizeof(char), " %f %f %f",	
+				sscanf (	buffer.data() + 2*sizeof(char), " %f %f %f",
 					&obj.normals[numNormals][0],
 					&obj.normals[numNormals][1],
 					&obj.normals[numNormals][2]);
@@ -263,7 +264,7 @@ int loadObj(const char *fileName, Object &obj)
 			{
 				if (buffer[1] == ' ')
 				{
-					sscanf (	buffer.data() + sizeof(char), " %f %f %f",	
+					sscanf (	buffer.data() + sizeof(char), " %f %f %f",
 						&obj.vertices[numVertices][0],
 						&obj.vertices[numVertices][1],
 						&obj.vertices[numVertices][2]);
@@ -273,7 +274,7 @@ int loadObj(const char *fileName, Object &obj)
 				{
 					if (buffer[1] == 't')
 					{
-						sscanf (	buffer.data() + 2*sizeof(char), " %f %f",	
+						sscanf (	buffer.data() + 2*sizeof(char), " %f %f",
 							&obj.texcoords[numTexCoords][0],
 							&obj.texcoords[numTexCoords][1]);
 						numTexCoords++;
@@ -286,12 +287,12 @@ int loadObj(const char *fileName, Object &obj)
 			if (buffer[0] == 'f')
 			{
 				if (stprovided)
-					sscanf(buffer.data() + sizeof(char), " %d/%d/%d %d/%d/%d %d/%d/%d",	
+					sscanf(buffer.data() + sizeof(char), " %d/%d/%d %d/%d/%d %d/%d/%d",
 					&obj.faces[numFaces][0].v, &obj.faces[numFaces][0].t, &obj.faces[numFaces][0].n,
 					&obj.faces[numFaces][1].v, &obj.faces[numFaces][1].t, &obj.faces[numFaces][1].n,
 					&obj.faces[numFaces][2].v, &obj.faces[numFaces][2].t, &obj.faces[numFaces][2].n);
 				else
-					sscanf(buffer.data() + sizeof(char), " %d//%d %d//%d %d//%d",	
+					sscanf(buffer.data() + sizeof(char), " %d//%d %d//%d %d//%d",
 					&obj.faces[numFaces][0].v, &obj.faces[numFaces][0].n,
 					&obj.faces[numFaces][1].v, &obj.faces[numFaces][1].n,
 					&obj.faces[numFaces][2].v, &obj.faces[numFaces][2].n);
@@ -427,7 +428,7 @@ void textCB(int id)
 
 void buttonCB(int control)
 {
-	string filename = string(objFileNameTextField->get_text()) + ext;
+	string filename = path + string(objFileNameTextField->get_text()) + ext;
 	switch (control)
 	{
 	case LOAD_BUTTON:
@@ -461,7 +462,7 @@ void drawObjects(GLenum mode)
 	{
 		if (mode == GL_SELECT)
 			glLoadName(i);
-			
+
 		glCallList(Objects.at(i).displayList);
 
 		if ((mode == GL_RENDER) && (objSelected == i))
@@ -529,7 +530,17 @@ void myGlutDisplay(void)
 	/// ADD YOUR CODE HERE
 	// This is where you choose textures, shading model, etc. based on the interface
 	// Alternatively, you can use the callbacks above to update the relevant OGL state
-	programs[0]->Use();
+
+	// Set the light position
+	glLightfv(GL_LIGHT0, GL_POSITION, light0_pos);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightCoeffs.diffuse);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, lightCoeffs.ambient);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, lightCoeffs.specular);
+
+	cerr << "Using Shader: " << shader << endl;
+	if (shader >= 0) {
+		programs[shader]->Use();
+	}
 
 	drawObjects(GL_RENDER);
 
@@ -634,11 +645,28 @@ void processHits(GLint hits, GLuint buffer[])
 
 void initScene()
 {
-/// ADD YOUR CODE HERE TO INITIALIZE TEXTURES, LIGHTING, CREATE SHADERS, CREATE TEXTURES, etc.
+	int i;
+
+	/// ADD YOUR CODE HERE TO INITIALIZE TEXTURES, LIGHTING, CREATE SHADERS, CREATE TEXTURES, etc.
+	glEnable(GL_NORMALIZE);
+
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+
+	/*
+	glShadeModel(GL_SMOOTH);
+	glEnable(GL_COLOR_MATERIAL);
+	glEnable(GL_DEPTH_TEST);
+	glClearColor(BACKGROUND_COLOR);
+	glEnable(GL_POLYGON_OFFSET_LINE);
+	glPolygonOffset(0, -100);
+	*/
 
 	//Here's an example of how to initialize a shader, however, it will not work until lighting is properly 
 	//initialized above.
-	programs[0] = new GLSLProgram(vsFiles[0], fsFiles[0]);
+	for (i = 0; i < NUMSHADERS; i++) {
+		programs[i] = new GLSLProgram(vsFiles[i], fsFiles[i]);
+	}
 }
 
 int main(int argc, char **argv)
@@ -686,7 +714,7 @@ int main(int argc, char **argv)
 	GLUI_Panel *lightingPanel = glui->add_panel("", 0);
 
 	GLUI_Panel *objMaterialPanel = glui->add_panel_to_panel(lightingPanel, "Object material");
-	
+
 	GLUI_Panel *objDiffusePanel = glui->add_panel_to_panel(objMaterialPanel, "Diffuse");
 	GLUI_Spinner *kdRedValue = glui->add_spinner_to_panel(objDiffusePanel, "Red", GLUI_SPINNER_FLOAT, &objectMat.diffuse[0], 0, colorCB);
 	kdRedValue->set_float_limits(0.f, 1.f);
