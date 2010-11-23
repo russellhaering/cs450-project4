@@ -451,6 +451,12 @@ void colorCB(int id)
 	if ((id == 0) && (objSelected != -1))
 	{
 		/// UPDATE THE OBJECT MATERIAL
+		Object *obj = &Objects.at(objSelected);
+		for (int i = 0; i < 3; i++) {
+			obj->material.ambient[i] = objectMat.ambient[i];
+			obj->material.diffuse[i] = objectMat.diffuse[i];
+			obj->material.specular[i] = objectMat.specular[i];
+		}
 	}
 	glui->sync_live();
 	glutPostRedisplay();
@@ -649,13 +655,16 @@ void processHits(GLint hits, GLuint buffer[])
 		for (i = 0; i < 3; i++) {
 			objectMat.ambient[i] = obj->material.ambient[i];
 			objectMat.diffuse[i] = obj->material.diffuse[i];
+			objectMat.specular[i] = obj->material.specular[i];
 		}
 	}
 	else
 	{
-		objectMat.ambient[0] = objectMat.diffuse[0] = 1.f;
-		objectMat.ambient[1] = objectMat.diffuse[1] = 1.f;
-		objectMat.ambient[2] = objectMat.diffuse[2] = 1.f;
+		for (i = 0; i < 3; i++) {
+			objectMat.ambient[i] = 1.f;
+			objectMat.diffuse[i] = 1.f;
+			objectMat.specular[i] = 1.f;
+		}
 	}
 	glui->sync_live();
 }
