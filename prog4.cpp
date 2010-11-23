@@ -538,8 +538,18 @@ void myGlutDisplay(void)
 	glLightfv(GL_LIGHT0, GL_SPECULAR, lightCoeffs.specular);
 
 	cerr << "Using Shader: " << shader << endl;
-	if (shader >= 0) {
+	switch (shader) {
+	case -1:
+		// No shader in use
+		break;
+	case 0 ... (NUMSHADERS - 1):
+		// Implemented shader in use
 		programs[shader]->Use();
+		break;
+	default:
+		// Unimplemented shader in use
+		cout << "Unimplemented Shader Selected: " << shader << endl;
+		break;
 	}
 
 	drawObjects(GL_RENDER);
@@ -612,12 +622,14 @@ void myGlutMouse(int button, int button_state, int x, int y)
 
 void processHits(GLint hits, GLuint buffer[])
 {
+	int i;
 	int pick = -1;
 	unsigned int min_depth = 4294967295;
 	GLuint *ptr = (GLuint *) buffer;
+	Object *obj;
 
 	cout << "Number of hits = " << hits << endl;
-	for(int i = 0 ; i < hits ; i++, ptr+=4)
+	for(i = 0 ; i < hits ; i++, ptr+=4)
 	{
 		if (*(ptr+1) < min_depth)
 		{
@@ -633,6 +645,11 @@ void processHits(GLint hits, GLuint buffer[])
 		cout << "We got ourselves a winner: #" << pick << endl;
 
 		/// UPDATE THE INTERFACE MATERIAL VALUES TO REFLECT THE SELECTED OBJECT
+		obj = &Objects.at(objSelected);
+		for (i = 0; i < 3; i++) {
+			objectMat.ambient[i] = obj->material.ambient[i];
+			objectMat.diffuse[i] = obj->material.diffuse[i];
+		}
 	}
 	else
 	{
