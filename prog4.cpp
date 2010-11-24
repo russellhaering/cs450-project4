@@ -419,6 +419,14 @@ void textureCB(int id)
 
 void shadingCB(int id)
 {
+	switch (shadingModel) {
+	case SMOOTH:
+		glShadeModel(GL_SMOOTH);
+		break;
+	case FLAT:
+		glShadeModel(GL_FLAT);
+		break;
+	};
 	glui->sync_live();
 	glutPostRedisplay();
 }
