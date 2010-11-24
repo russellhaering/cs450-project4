@@ -800,7 +800,7 @@ int main(int argc, char **argv)
 	ldBlueValue->set_float_limits(0.f, 1.f);
 	ldBlueValue->set_float_val(1.f);
 
-	GLUI_Panel *lightAmbientPanel = glui->add_panel_to_panel(lightPanel, "Specular");
+	GLUI_Panel *lightAmbientPanel = glui->add_panel_to_panel(lightPanel, "Ambient");
 	GLUI_Spinner *laRedValue = glui->add_spinner_to_panel(lightAmbientPanel, "Red", GLUI_SPINNER_FLOAT, &lightCoeffs.ambient[0], -1, colorCB);
 	laRedValue->set_float_limits(0.f, 1.f);
 	laRedValue->set_float_val(1.f);
@@ -811,7 +811,7 @@ int main(int argc, char **argv)
 	laBlueValue->set_float_limits(0.f, 1.f);
 	laBlueValue->set_float_val(1.f);
 
-	GLUI_Panel *lightSpecularPanel = glui->add_panel_to_panel(lightPanel, "Ambient");
+	GLUI_Panel *lightSpecularPanel = glui->add_panel_to_panel(lightPanel, "Specular");
 	GLUI_Spinner *lsRedValue = glui->add_spinner_to_panel(lightSpecularPanel, "Red", GLUI_SPINNER_FLOAT, &lightCoeffs.specular[0], -1, colorCB);
 	lsRedValue->set_float_limits(0.f, 1.f);
 	lsRedValue->set_float_val(1.f);
