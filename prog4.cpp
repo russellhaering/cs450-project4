@@ -454,11 +454,10 @@ void colorCB(int id)
 	if ((id == 0) && (objSelected != -1))
 	{
 		/// UPDATE THE OBJECT MATERIAL
-		Object *obj = &Objects.at(objSelected);
 		for (int i = 0; i < 3; i++) {
-			obj->material.ambient[i] = objectMat.ambient[i];
-			obj->material.diffuse[i] = objectMat.diffuse[i];
-			obj->material.specular[i] = objectMat.specular[i];
+			Objects.at(objSelected).material.ambient[i] = objectMat.ambient[i];
+			Objects.at(objSelected).material.diffuse[i] = objectMat.diffuse[i];
+			Objects.at(objSelected).material.specular[i] = objectMat.specular[i];
 		}
 	}
 	glui->sync_live();
@@ -690,11 +689,11 @@ void initScene()
 
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
-
-	/*
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_COLOR_MATERIAL);
 	glEnable(GL_DEPTH_TEST);
+
+	/*
 	glClearColor(BACKGROUND_COLOR);
 	glEnable(GL_POLYGON_OFFSET_LINE);
 	glPolygonOffset(0, -100);
