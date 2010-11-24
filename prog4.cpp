@@ -712,6 +712,30 @@ void initScene()
 	for (i = 0; i < NUMSHADERS; i++) {
 		programs[i] = new GLSLProgram(vsFiles[i], fsFiles[i]);
 	}
+
+	// This should ideally probably be done lazily to cut load times... but its not
+	for (i = 0; i < NUMTEXTURES; i++) {
+		tex[i] = new Texture;
+		tex[i]->values = BmpToTexture(textureFiles[i], &tex[i]->width, &tex[i]->height);
+		glGenTextures(1, &tex[i]->textureID);
+		glBindTexture(GL_TEXTURE_2D, tex[i]->textureID);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+		glTexImage2D(GL_TEXTURE_2D,
+					 0, GL_RGB,
+					 tex[i]->width,
+					 tex[i]->height,
+					 0, GL_RGB,
+					 GL_UNSIGNED_BYTE,
+					 tex[i]->values);
+	}
 }
 
 int main(int argc, char **argv)

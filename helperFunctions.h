@@ -125,7 +125,7 @@ short ReadShort( FILE *fp )
 }
 
 // read a BMP file into a Texture:
-unsigned char * BmpToTexture( char *filename, int *width, int *height )
+unsigned char * BmpToTexture(const char *filename, int *width, int *height )
 {
 	int s, t, e;		// counters
 	int numextra;		// # extra bytes each line in the file is padded with
