@@ -180,6 +180,7 @@ const string ext = string(".obj");
 /// several times.
 int loadObj(const char *fileName, Object &obj)
 {
+	int i;
 	bool stprovided = false;
 	ifstream file;
 	file.open(fileName);
@@ -191,9 +192,11 @@ int loadObj(const char *fileName, Object &obj)
 	}
 
 	obj.name = string(fileName);
-	obj.material.diffuse[0] = obj.material.diffuse[1] = obj.material.diffuse[2] = 1.f;
-	obj.material.ambient[0] = obj.material.ambient[1] = obj.material.ambient[2] = 1.f;
-	obj.material.specular[0] = obj.material.specular[1] = obj.material.specular[2] = 1.f;
+	for (i = 0; i < 3; i++) {
+		obj.material.diffuse[i] = 1.f;
+		obj.material.ambient[i] = 1.f;
+		obj.material.specular[i] = 1.f;
+	}
 
 	/// First pass: count the vertices, normals, texture coordinates and faces, allocate the arrays.
 	int numVertices = 0, numNormals = 0, numTexCoords = 0, numFaces = 0;
@@ -466,8 +469,14 @@ void drawObjects(GLenum mode)
 {
 	for (int i = 0 ; i < (int) Objects.size() ; i++)
 	{
+		Object *obj = &Objects.at(i);
+
 		if (mode == GL_SELECT)
 			glLoadName(i);
+
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, obj->material.ambient);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, obj->material.diffuse);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, obj->material.specular);
 
 		glCallList(Objects.at(i).displayList);
 
@@ -477,7 +486,9 @@ void drawObjects(GLenum mode)
 			glEnable(GL_POLYGON_OFFSET_LINE);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-			glColor3f(1.f - Objects.at(i).material.diffuse[0], 1.f - Objects.at(i).material.diffuse[1], 1.f - Objects.at(i).material.diffuse[2]);
+			glColor3f(1.f - obj->material.diffuse[0],
+					  1.f - obj->material.diffuse[1],
+					  1.f - obj->material.diffuse[2]);
 			glCallList(Objects.at(i).displayList);
 
 			glEnable(GL_LIGHTING);
@@ -547,6 +558,7 @@ void myGlutDisplay(void)
 	switch (shader) {
 	case -1:
 		// No shader in use
+		glUseProgram(0);
 		break;
 	case 0 ... (NUMSHADERS - 1):
 		// Implemented shader in use

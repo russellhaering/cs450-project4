@@ -295,11 +295,7 @@ GLSLProgram::Use()
 void
 GLSLProgram::Use( int p )
 {
-	if( p != CurrentProgram )
-	{
-		glUseProgram( p );
-		CurrentProgram = p;
-	}
+	glUseProgram( p );
 };
 
 
@@ -439,8 +435,6 @@ GLSLProgram::IsExtensionSupported( const char *extension )
 	return false;
 }
 
-
-int GLSLProgram::CurrentProgram = 0;
 
 #endif
 
