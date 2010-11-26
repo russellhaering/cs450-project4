@@ -18,6 +18,8 @@
 
 #include <vector>
 
+#define BACKGROUND_COLOR 0.5, 0.5, 0.5, 1.0
+
 using namespace std;
 
 /************************************************************************/
@@ -772,6 +774,7 @@ void initScene()
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_COLOR_MATERIAL);
 	glEnable(GL_DEPTH_TEST);
+	glClearColor(BACKGROUND_COLOR);
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_POLYGON_OFFSET_LINE);
 	glPolygonOffset(0, -100);
