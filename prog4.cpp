@@ -551,6 +551,9 @@ void drawObjects(GLenum mode)
 		
 		doTexture();
 
+		glEnable(GL_LIGHTING);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
 		glCallList(Objects.at(i).displayList);
 
 		if ((mode == GL_RENDER) && (objSelected == i))
@@ -767,12 +770,8 @@ void initScene()
 	glEnable(GL_COLOR_MATERIAL);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_TEXTURE_2D);
-
-	/*
-	glClearColor(BACKGROUND_COLOR);
 	glEnable(GL_POLYGON_OFFSET_LINE);
 	glPolygonOffset(0, -100);
-	*/
 
 	//Here's an example of how to initialize a shader, however, it will not work until lighting is properly 
 	//initialized above.
