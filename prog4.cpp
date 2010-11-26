@@ -411,6 +411,50 @@ void projCB(int id)
 	glutPostRedisplay();
 }
 
+void doTexture()
+{
+	if (texWrap_S == REPEAT)
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	else if (texWrap_S == CLAMPTOEDGE)
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+
+	if (texWrap_T == REPEAT)
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	else if (texWrap_T == CLAMPTOEDGE)
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	if (texMinFilter == LINEAR)
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	else if (texMinFilter == NEAREST)
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	if (texMagFilter == LINEAR)
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	else if (texMagFilter == NEAREST)
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	switch (texEnv) {
+	case REPLACE:
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		break;
+	case MODULATE:
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		break;
+	case DECAL:
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+		break;
+	case BLEND:
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
+		break;
+	}
+	
+	if (texture >= 0)
+		glBindTexture(GL_TEXTURE_2D, tex[texture]->textureID);
+	else
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+}
+
 void textureCB(int id)
 {
 	glui->sync_live();
@@ -484,6 +528,8 @@ void drawObjects(GLenum mode)
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, obj->material.ambient);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, obj->material.diffuse);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, obj->material.specular);
+		
+		doTexture();
 
 		glCallList(Objects.at(i).displayList);
 
@@ -700,6 +746,7 @@ void initScene()
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_COLOR_MATERIAL);
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_TEXTURE_2D);
 
 	/*
 	glClearColor(BACKGROUND_COLOR);
@@ -713,20 +760,20 @@ void initScene()
 		programs[i] = new GLSLProgram(vsFiles[i], fsFiles[i]);
 	}
 
-	// This should ideally probably be done lazily to cut load times... but its not
 	for (i = 0; i < NUMTEXTURES; i++) {
 		tex[i] = new Texture;
 		tex[i]->values = BmpToTexture(textureFiles[i], &tex[i]->width, &tex[i]->height);
 		glGenTextures(1, &tex[i]->textureID);
 		glBindTexture(GL_TEXTURE_2D, tex[i]->textureID);
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		// Set some initial parameters
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 		glTexImage2D(GL_TEXTURE_2D,
 					 0, GL_RGB,
