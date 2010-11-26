@@ -141,14 +141,16 @@ const char *textureFiles[NUMTEXTURES] = {
 };
 Texture *tex[NUMTEXTURES];
 
-#define NUMSHADERS 2
+#define NUMSHADERS 3
 char *vsFiles[NUMSHADERS] = {
 	"data/shaders/PassThrough.vert",
-	"data/shaders/Diffuse.vert"
+	"data/shaders/Diffuse.vert",
+	"data/shaders/Phong.vert"
 };
 char *fsFiles[NUMSHADERS] = {
 	"data/shaders/PassThrough.frag",
-	"data/shaders/Diffuse.frag"
+	"data/shaders/Diffuse.frag",
+	"data/shaders/Phong.frag"
 };
 GLSLProgram *programs[NUMSHADERS];
 
@@ -630,7 +632,6 @@ void myGlutDisplay(void)
 	glLightfv(GL_LIGHT0, GL_AMBIENT, lightCoeffs.ambient);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, lightCoeffs.specular);
 
-	cerr << "Using Shader: " << shader << endl;
 	switch (shader) {
 	case -1:
 		// No shader in use
