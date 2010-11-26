@@ -141,16 +141,18 @@ const char *textureFiles[NUMTEXTURES] = {
 };
 Texture *tex[NUMTEXTURES];
 
-#define NUMSHADERS 3
+#define NUMSHADERS 4
 char *vsFiles[NUMSHADERS] = {
 	"data/shaders/PassThrough.vert",
 	"data/shaders/Diffuse.vert",
-	"data/shaders/Phong.vert"
+	"data/shaders/Phong.vert",
+	"data/shaders/Toon.vert"
 };
 char *fsFiles[NUMSHADERS] = {
 	"data/shaders/PassThrough.frag",
 	"data/shaders/Diffuse.frag",
-	"data/shaders/Phong.frag"
+	"data/shaders/Phong.frag",
+	"data/shaders/Toon.frag"
 };
 GLSLProgram *programs[NUMSHADERS];
 
