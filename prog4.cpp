@@ -554,6 +554,12 @@ void drawObjects(GLenum mode)
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, obj->material.ambient);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, obj->material.diffuse);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, obj->material.specular);
+		if (shader == PHONG) {
+			glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 100.0);
+		}
+		else {
+			glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 0.0);
+		}
 		
 		doTexture();
 
