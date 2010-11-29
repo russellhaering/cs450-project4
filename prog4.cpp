@@ -551,36 +551,44 @@ void drawObjects(GLenum mode)
 		if (mode == GL_SELECT)
 			glLoadName(i);
 
-		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, obj->material.ambient);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, obj->material.diffuse);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, obj->material.specular);
-		if (shader == PHONG) {
-			glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 100.0);
-		}
-		else {
-			glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 0.0);
-		}
-		
-		doTexture();
+		{
+			glEnable(GL_LIGHTING);
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-		glEnable(GL_LIGHTING);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			// Set the light position
+			glLightfv(GL_LIGHT0, GL_POSITION, light0_pos);
+			glLightfv(GL_LIGHT0, GL_DIFFUSE, lightCoeffs.diffuse);
+			glLightfv(GL_LIGHT0, GL_AMBIENT, lightCoeffs.ambient);
+			glLightfv(GL_LIGHT0, GL_SPECULAR, lightCoeffs.specular);
 
-		glCallList(Objects.at(i).displayList);
+			doTexture();
+
+			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, obj->material.ambient);
+			glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, obj->material.diffuse);
+			glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, obj->material.specular);
+			if (shader == PHONG) {
+				glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 100.0);
+			}
+			else {
+				glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 0.0);
+			}
+
+			glCallList(Objects.at(i).displayList);
+		}
 
 		if ((mode == GL_RENDER) && (objSelected == i))
 		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			glDisable(GL_LIGHTING);
 			glEnable(GL_POLYGON_OFFSET_LINE);
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			glEnable(GL_COLOR_MATERIAL);
 
-			glColor3f(1.f - obj->material.diffuse[0],
-					  1.f - obj->material.diffuse[1],
-					  1.f - obj->material.diffuse[2]);
+			glColor3f(1.0, 0.0, 0.0);
 			glCallList(Objects.at(i).displayList);
 
-			glEnable(GL_LIGHTING);
+			glDisable(GL_COLOR_MATERIAL);
 			glDisable(GL_POLYGON_OFFSET_LINE);
+			glEnable(GL_LIGHTING);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 	}
@@ -636,11 +644,6 @@ void myGlutDisplay(void)
 	// This is where you choose textures, shading model, etc. based on the interface
 	// Alternatively, you can use the callbacks above to update the relevant OGL state
 
-	// Set the light position
-	glLightfv(GL_LIGHT0, GL_POSITION, light0_pos);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightCoeffs.diffuse);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, lightCoeffs.ambient);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, lightCoeffs.specular);
 
 	switch (shader) {
 	case -1:
@@ -778,7 +781,7 @@ void initScene()
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
 	glShadeModel(GL_SMOOTH);
-	glEnable(GL_COLOR_MATERIAL);
+	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(BACKGROUND_COLOR);
 	glEnable(GL_TEXTURE_2D);
