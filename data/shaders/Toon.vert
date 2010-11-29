@@ -1,4 +1,7 @@
-varying vec3 N, E;
+// This shader is based on information from the following resources:
+// http://www.opengl.org/sdk/docs/tutorials/ClockworkCoders/lighting.php
+// http://www.lighthouse3d.com/opengl/glsl/index.php
+varying vec3 N, v;
 
 void main()
 {
@@ -6,10 +9,7 @@ void main()
 	N = normalize(gl_NormalMatrix * gl_Normal);
 
 	// And the vertex position
-	vec3 v = vec3(gl_ModelViewMatrix * gl_Vertex);
-
-	// The eye normal
-	E = normalize(-v);
+	v = vec3(gl_ModelViewMatrix * gl_Vertex);
 
 	// Set the vertex position
 	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
