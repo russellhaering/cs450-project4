@@ -1,3 +1,6 @@
+// This shader is based on information from the following resources:
+// http://www.opengl.org/sdk/docs/tutorials/ClockworkCoders/lighting.php
+// http://www.lighthouse3d.com/opengl/glsl/index.php
 varying vec3 N, v;
 
 void main()
