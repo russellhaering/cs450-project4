@@ -199,9 +199,9 @@ int loadObj(const char *fileName, Object &obj)
 
 	obj.name = string(fileName);
 	for (i = 0; i < 3; i++) {
-		obj.material.diffuse[i] = 1.f;
-		obj.material.ambient[i] = 1.f;
-		obj.material.specular[i] = 1.f;
+		obj.material.diffuse[i] =  1.0f;
+		obj.material.ambient[i] =  0.0f;
+		obj.material.specular[i] = 1.0f;
 	}
 
 	/// First pass: count the vertices, normals, texture coordinates and faces, allocate the arrays.
